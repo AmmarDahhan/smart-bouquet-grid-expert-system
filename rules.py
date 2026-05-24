@@ -134,7 +134,7 @@ class RoseEngine(KnowledgeEngine):
         )
     
     # ==================================
-    # VALIDATE GRID BOUNDARIES
+    # VALIDATE GRID BOUNDARIES + DUPLICATES
     # ==================================
 
     @Rule(
@@ -154,7 +154,14 @@ class RoseEngine(KnowledgeEngine):
         TEST(lambda x: x >= 1),
         TEST(lambda y: y >= 1),
         TEST(lambda x, width: x <= width),
-        TEST(lambda y, height: y <= height)
+        TEST(lambda y, height: y <= height),
+
+        NOT(
+            StateSignature(
+                robot_x=MATCH.x,
+                robot_y=MATCH.y
+            )
+        )
     )
     def validate_move(
         self,
@@ -203,3 +210,81 @@ class RoseEngine(KnowledgeEngine):
             f'{action} -> ({x},{y})'
         )
 
+
+    # ==================================
+    # GENERATE NEW STATE
+    # ==================================
+
+    @Rule(
+        AS.counter << StateCounter(
+            value=MATCH.counter_value
+        ),
+
+        AS.valid_move << ValidMove(
+            parent_state=MATCH.parent,
+            action=MATCH.action,
+            new_x=MATCH.x,
+            new_y=MATCH.y,
+            new_cost=MATCH.cost
+        )
+    )
+    def generate_state(
+        self,
+        counter,
+        valid_move,
+        counter_value,
+        parent,
+        action,
+        x,
+        y,
+        cost
+    ):
+
+        new_state_id = counter_value + 1
+
+        self.modify(
+            counter,
+            value=new_state_id
+        )
+
+        self.declare(
+            State(
+                id=new_state_id,
+                parent=parent,
+                action=action,
+                robot_x=x,
+                robot_y=y,
+                cost=cost
+            )
+        )
+
+        self.declare(
+            StateSignature(
+                robot_x=x,
+                robot_y=y
+            )
+        )
+
+        self.retract(
+            valid_move
+        )
+
+        print(
+            f'\nGenerated State {new_state_id}'
+        )
+
+        print(
+            f'Parent: {parent}'
+        )
+
+        print(
+            f'Action: {action}'
+        )
+
+        print(
+            f'Position: ({x},{y})'
+        )
+
+        print(
+            f'Cost: {cost}'
+        )

@@ -63,7 +63,7 @@ class StateCounter(Fact):
 
 class StateSignature(Fact):
     """
-    Unique state signature
+    Unique generated state signature
     """
     pass
 
