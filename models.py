@@ -78,3 +78,51 @@ class ValidMove(Fact):
     Valid legal move
     """
     pass
+
+class RobotAtWarehouse(Fact):
+    """
+    Robot is currently inside warehouse
+    """
+    pass
+
+class Bouquet(Fact):
+    """
+    Flower bouquet
+    """
+    pass
+
+class RobotLoad(Fact):
+    """
+    Current robot load
+    """
+    pass
+
+class RobotHasLoad(Fact):
+    """
+    Robot currently carries bouquets
+    """
+    pass
+
+class Pavilion(Fact):
+    """
+    Pavilion inside gallery
+    """
+    pass
+
+class RobotAtPavilion(Fact):
+    """
+    Robot currently inside pavilion
+    """
+    pass
+
+class PavilionNeed(Fact):
+    """
+    Pavilion remaining needs
+    """
+    pass
+
+class GoalReached(Fact):
+    """
+    Goal state achieved
+    """
+    pass

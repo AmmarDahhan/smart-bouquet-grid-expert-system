@@ -85,3 +85,38 @@ def load_initial_facts(engine):
             robot_y=1
         )
     )
+
+    # temporary 
+    engine.declare(
+        Bouquet(
+            flower='rose',
+            color='red',
+            count=2
+        )
+    )
+
+    engine.declare(
+        Bouquet(
+            flower='rose',
+            color='white',
+            count=1
+        )
+    )
+
+    engine.declare(
+        Pavilion(
+            name='p1',
+            flower='rose',
+            x=4,
+            y=2
+        )
+    )
+
+    engine.declare(
+        PavilionNeed(
+            pavilion='p1',
+            flower='rose',
+            color='red',
+            count=2
+        )
+    )

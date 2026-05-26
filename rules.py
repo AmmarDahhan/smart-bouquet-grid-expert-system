@@ -288,3 +288,277 @@ class RoseEngine(KnowledgeEngine):
         print(
             f'Cost: {cost}'
         )
+
+    # ==================================
+    # PROPAGATE ROBOT LOAD
+    # ==================================
+
+    @Rule(
+        State(
+            id=MATCH.new_state,
+            parent=MATCH.parent_state
+        ),
+
+        RobotLoad(
+            state_id=MATCH.parent_state,
+            flower=MATCH.flower,
+            color=MATCH.color,
+            count=MATCH.count
+        ),
+
+        NOT(
+            RobotLoad(
+                state_id=MATCH.new_state,
+                flower=MATCH.flower,
+                color=MATCH.color
+            )
+        )
+    )
+    def propagate_robot_load(
+        self,
+        new_state,
+        flower,
+        color,
+        count
+    ):
+
+        self.declare(
+            RobotLoad(
+                state_id=new_state,
+                flower=flower,
+                color=color,
+                count=count
+            )
+        )
+
+        print(
+            f'\nLoad propagated to state {new_state}'
+        )
+
+    # ==================================
+    # DETECT ROBOT AT WAREHOUSE
+    # ==================================
+
+    @Rule(
+        Warehouse(
+            x=MATCH.wx,
+            y=MATCH.wy
+        ),
+
+        State(
+            id=MATCH.state_id,
+            robot_x=MATCH.rx,
+            robot_y=MATCH.ry
+        ),
+
+        TEST(lambda wx, rx: wx == rx),
+        TEST(lambda wy, ry: wy == ry)
+    )
+    def detect_robot_at_warehouse(
+        self,
+        state_id
+    ):
+
+        self.declare(
+            RobotAtWarehouse(
+                state_id=state_id
+            )
+        )
+
+        print(
+            f'\nRobot reached warehouse in state {state_id}'
+        )
+
+    # ==================================
+    # LOAD BOUQUET
+    # ==================================
+
+    @Rule(
+        RobotAtWarehouse(
+            state_id=MATCH.state_id
+        ),
+
+        AS.bouquet << Bouquet(
+            flower=MATCH.flower,
+            color=MATCH.color,
+            count=MATCH.count
+        )
+    )
+    def load_bouquet(
+        self,
+        bouquet,
+        state_id,
+        flower,
+        color,
+        count
+    ):
+
+        self.declare(
+            RobotLoad(
+                state_id=state_id,
+                flower=flower,
+                color=color,
+                count=count
+            )
+        )
+
+        self.retract(
+            bouquet
+        )
+
+        print(
+            f'\nLoaded bouquet in state {state_id}'
+        )
+
+        print(
+            f'{flower} - {color} - {count}'
+        )
+
+    # ==================================
+    # DETECT ROBOT HAS LOAD
+    # ==================================
+
+    @Rule(
+        RobotLoad(
+            state_id=MATCH.state_id
+        )
+    )
+    def detect_robot_has_load(
+        self,
+        state_id
+    ):
+
+        self.declare(
+            RobotHasLoad(
+                state_id=state_id
+            )
+        )
+
+        print(
+            f'\nRobot has load in state {state_id}'
+        )
+
+    # ==================================
+    # DETECT ROBOT AT PAVILION
+    # ==================================
+
+    @Rule(
+        Pavilion(
+            name=MATCH.name,
+            flower=MATCH.flower,
+            x=MATCH.px,
+            y=MATCH.py
+        ),
+
+        State(
+            id=MATCH.state_id,
+            robot_x=MATCH.rx,
+            robot_y=MATCH.ry
+        ),
+
+        TEST(lambda px, rx: px == rx),
+        TEST(lambda py, ry: py == ry)
+    )
+    def detect_robot_at_pavilion(
+        self,
+        state_id,
+        name
+    ):
+
+        self.declare(
+            RobotAtPavilion(
+                state_id=state_id,
+                pavilion=name
+            )
+        )
+
+        print(
+            f'\nRobot reached pavilion {name}'
+        )
+
+    # ==================================
+    # UNLOAD BOUQUET
+    # ==================================
+
+    @Rule(
+        RobotAtPavilion(
+            state_id=MATCH.state_id,
+            pavilion=MATCH.pavilion
+        ),
+
+        PavilionNeed(
+            pavilion=MATCH.pavilion,
+            flower=MATCH.flower,
+            color=MATCH.color,
+            count=MATCH.need_count
+        ),
+
+        AS.load << RobotLoad(
+            state_id=MATCH.state_id,
+            flower=MATCH.flower,
+            color=MATCH.color,
+            count=MATCH.load_count
+        ),
+        AS.need << PavilionNeed(
+            pavilion=MATCH.pavilion,
+            flower=MATCH.flower,
+            color=MATCH.color,
+            count=MATCH.need_count
+        )
+    )
+    def unload_bouquet(
+        self,
+        load,
+        need,
+        state_id,
+        pavilion,
+        flower,
+        color,
+        need_count,
+        load_count
+    ):
+
+        self.retract(
+            load
+        )
+        self.retract(
+            need
+        )
+
+        print(
+            f'\nUnloaded bouquet at pavilion {pavilion}'
+        )
+
+        print(
+            f'{flower} - {color}'
+        )
+
+    # ==================================
+    # GOAL DETECTION
+    # ==================================
+
+    @Rule(
+        RobotAtPavilion(
+            state_id=MATCH.state_id,
+            pavilion=MATCH.pavilion
+        ),
+
+        RobotHasLoad(
+            state_id=MATCH.state_id
+        )
+    )
+    def detect_goal(
+        self,
+        state_id,
+        pavilion
+    ):
+
+        self.declare(
+            GoalReached(
+                state_id=state_id
+            )
+        )
+
+        print(
+            f'\nGOAL REACHED at pavilion {pavilion}'
+        )
