@@ -558,7 +558,127 @@ class RoseEngine(KnowledgeEngine):
                 state_id=state_id
             )
         )
+        self.declare(
+            FinalState(
+                state_id=state_id
+            )
+        )
 
         print(
             f'\nGOAL REACHED at pavilion {pavilion}'
+        )
+
+    # ==================================
+    # SHOW FINAL PATH
+    # ==================================
+
+    @Rule(
+        FinalState(
+            state_id=MATCH.state_id
+        ),
+
+        State(
+            id=MATCH.state_id,
+            parent=MATCH.parent,
+            action=MATCH.action
+        )
+    )
+    def show_final_path(
+        self,
+        state_id,
+        parent,
+        action
+    ):
+
+        print(
+            f'\nFINAL STATE: {state_id}'
+        )
+
+        print(
+            f'Last action: {action}'
+        )
+
+        print(
+            f'Parent state: {parent}'
+        )
+
+    # ==================================
+    # START PATH TRACE
+    # ==================================
+
+    @Rule(
+        FinalState(
+            state_id=MATCH.state_id
+        )
+    )
+    def start_path_trace(
+        self,
+        state_id
+    ):
+
+        self.declare(
+            TracePath(
+                state_id=state_id
+            )
+        )
+
+    # ==================================
+    # TRACE PATH
+    # ==================================
+
+    @Rule(
+        TracePath(
+            state_id=MATCH.state_id
+        ),
+
+        State(
+            id=MATCH.state_id,
+            parent=MATCH.parent,
+            action=MATCH.action,
+            robot_x=MATCH.x,
+            robot_y=MATCH.y
+        )
+    )
+    def trace_path(
+        self,
+        state_id,
+        parent,
+        action,
+        x,
+        y
+    ):
+
+        print(
+            f'\nPATH STATE {state_id}'
+        )
+
+        print(
+            f'Action: {action}'
+        )
+
+        print(
+            f'Position: ({x},{y})'
+        )
+
+        self.declare(
+            TracePath(
+                state_id=parent
+            )
+        )
+
+    # ==================================
+    # TRACE ROOT STATE
+    # ==================================
+
+    @Rule(
+        TracePath(
+            state_id=1
+        )
+    )
+    def trace_root(
+        self
+    ):
+
+        print(
+            '\nReached initial state'
         )

@@ -126,3 +126,15 @@ class GoalReached(Fact):
     Goal state achieved
     """
     pass
+
+class FinalState(Fact):
+    """
+    Final successful state
+    """
+    pass
+
+class TracePath(Fact):
+    """
+    Request path tracing
+    """
+    pass
