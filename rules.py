@@ -568,6 +568,7 @@ class RoseEngine(KnowledgeEngine):
             f'\nGOAL REACHED at pavilion {pavilion}'
         )
 
+
     # ==================================
     # SHOW FINAL PATH
     # ==================================
@@ -682,3 +683,5 @@ class RoseEngine(KnowledgeEngine):
         print(
             '\nReached initial state'
         )
+
+        self.halt()
