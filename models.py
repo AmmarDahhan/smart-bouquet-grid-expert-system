@@ -121,12 +121,6 @@ class PavilionNeed(Fact):
     """
     pass
 
-class GoalReached(Fact):
-    """
-    Goal state achieved
-    """
-    pass
-
 class FinalState(Fact):
     """
     Final successful state
@@ -137,4 +131,13 @@ class TracePath(Fact):
     """
     Request path tracing
     """
+    pass
+
+class MatchingLoad(Fact):
+    """
+    Robot carries bouquet matching pavilion need
+    """
+    pass
+
+class AllNeedsCompleted(Fact):
     pass

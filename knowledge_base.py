@@ -118,5 +118,26 @@ def load_initial_facts(engine):
             flower='rose',
             color='red',
             count=2
-        )
+        ),
+
+        PavilionNeed(
+            pavilion='p1',
+            flower='rose',
+            color='white',
+            count=1
+        ),
+
+        PavilionNeed(
+            pavilion='p2',
+            flower='tulip',
+            color='yellow',
+            count=1
+        ),
+
+        PavilionNeed(
+            pavilion='p3',
+            flower='orchid',
+            color='purple',
+            count=1
+        ),
     )

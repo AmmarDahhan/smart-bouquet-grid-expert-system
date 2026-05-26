@@ -10,6 +10,7 @@ class RoseEngine(KnowledgeEngine):
     # ==================================
 
     @Rule(
+        NOT(FinalState()),
         State(
             id=MATCH.state_id,
             robot_x=MATCH.x,
@@ -42,6 +43,7 @@ class RoseEngine(KnowledgeEngine):
     # ==================================
 
     @Rule(
+        NOT(FinalState()),
         State(
             id=MATCH.state_id,
             robot_x=MATCH.x,
@@ -74,6 +76,7 @@ class RoseEngine(KnowledgeEngine):
     # ==================================
 
     @Rule(
+        NOT(FinalState()),
         State(
             id=MATCH.state_id,
             robot_x=MATCH.x,
@@ -106,6 +109,7 @@ class RoseEngine(KnowledgeEngine):
     # ==================================
 
     @Rule(
+        NOT(FinalState()),
         State(
             id=MATCH.state_id,
             robot_x=MATCH.x,
@@ -521,8 +525,12 @@ class RoseEngine(KnowledgeEngine):
         self.retract(
             load
         )
-        self.retract(
-            need
+        # self.retract(
+        #     need
+        # )
+        self.modify(
+            need,
+            count=need_count - 1
         )
 
         print(
@@ -532,42 +540,6 @@ class RoseEngine(KnowledgeEngine):
         print(
             f'{flower} - {color}'
         )
-
-    # ==================================
-    # GOAL DETECTION
-    # ==================================
-
-    @Rule(
-        RobotAtPavilion(
-            state_id=MATCH.state_id,
-            pavilion=MATCH.pavilion
-        ),
-
-        RobotHasLoad(
-            state_id=MATCH.state_id
-        )
-    )
-    def detect_goal(
-        self,
-        state_id,
-        pavilion
-    ):
-
-        self.declare(
-            GoalReached(
-                state_id=state_id
-            )
-        )
-        self.declare(
-            FinalState(
-                state_id=state_id
-            )
-        )
-
-        print(
-            f'\nGOAL REACHED at pavilion {pavilion}'
-        )
-
 
     # ==================================
     # SHOW FINAL PATH
@@ -684,4 +656,119 @@ class RoseEngine(KnowledgeEngine):
             '\nReached initial state'
         )
 
-        self.halt()
+        # self.halt()
+
+    # ==================================
+    # MATCH LOAD WITH PAVILION NEED
+    # ==================================
+
+    @Rule(
+        RobotAtPavilion(
+            state_id=MATCH.state_id,
+            pavilion=MATCH.pavilion
+        ),
+
+        RobotLoad(
+            state_id=MATCH.state_id,
+            flower=MATCH.flower,
+            color=MATCH.color,
+            count=MATCH.load_count
+        ),
+
+        PavilionNeed(
+            pavilion=MATCH.pavilion,
+            flower=MATCH.flower,
+            color=MATCH.color,
+            count=MATCH.need_count
+        )
+    )
+    def match_load_with_need(
+        self,
+        state_id,
+        pavilion,
+        flower,
+        color
+    ):
+
+        self.declare(
+            MatchingLoad(
+                state_id=state_id,
+                pavilion=pavilion,
+                flower=flower,
+                color=color
+            )
+        )
+
+        print(
+            f'\nMatching bouquet for pavilion {pavilion}'
+        )    
+
+    # ==================================
+    # REMOVE COMPLETED NEED
+    # ==================================
+
+    @Rule(
+        AS.need << PavilionNeed(
+            pavilion=MATCH.pavilion,
+            flower=MATCH.flower,
+            color=MATCH.color,
+            count=0
+        )
+    )
+    def remove_completed_need(
+        self,
+        need,
+        pavilion,
+        flower,
+        color
+    ):
+
+        self.retract(
+            need
+        )
+
+        print(
+            f'\nNeed completed for pavilion {pavilion}'
+        )
+
+    # ==================================
+    # DETECT ALL NEEDS COMPLETED
+    # ==================================
+
+    @Rule(
+        NOT(
+            PavilionNeed()
+        )
+    )
+    def all_needs_completed(
+        self
+    ):
+
+        self.declare(
+            AllNeedsCompleted()
+        )
+
+        print(
+            '\nALL PAVILION NEEDS COMPLETED'
+        )
+
+    # ==================================
+    # FINAL GOAL
+    # ==================================
+
+    @Rule(
+        AllNeedsCompleted()
+    )
+    def final_goal(
+        self
+    ):
+
+        print(
+            '\nALL PAVILIONS COMPLETED'
+        )
+
+        self.declare(
+            FinalState(
+                state_id=-1
+            )
+        )
