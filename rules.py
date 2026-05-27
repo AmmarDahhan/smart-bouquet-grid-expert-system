@@ -311,6 +311,14 @@ class RoseEngine(KnowledgeEngine):
         ),
 
         NOT(
+            Delivered(
+                state_id=MATCH.parent_state,
+                flower=MATCH.flower,
+                color=MATCH.color
+            )
+        ),        
+
+        NOT(
             RobotLoad(
                 state_id=MATCH.new_state,
                 flower=MATCH.flower,
@@ -425,6 +433,13 @@ class RoseEngine(KnowledgeEngine):
     @Rule(
         RobotLoad(
             state_id=MATCH.state_id
+        ),
+        NOT(
+            Delivered(
+                state_id=MATCH.state_id,
+                flower=MATCH.flower,
+                color=MATCH.color
+            )
         )
     )
     def detect_robot_has_load(
@@ -508,6 +523,14 @@ class RoseEngine(KnowledgeEngine):
             flower=MATCH.flower,
             color=MATCH.color,
             count=MATCH.need_count
+        ),
+        NOT(
+            Delivered(
+                state_id=MATCH.state_id,
+                pavilion=MATCH.pavilion,
+                flower=MATCH.flower,
+                color=MATCH.color
+            )
         )
     )
     def unload_bouquet(
@@ -521,7 +544,11 @@ class RoseEngine(KnowledgeEngine):
         need_count,
         load_count
     ):
-
+        
+        # self.modify(
+        #     load,
+        #     count=load_count - 1
+        # )
         self.retract(
             load
         )
@@ -531,6 +558,15 @@ class RoseEngine(KnowledgeEngine):
         self.modify(
             need,
             count=need_count - 1
+        )
+
+        self.declare(
+            Delivered(
+                state_id=state_id,
+                pavilion=pavilion,
+                flower=flower,
+                color=color
+            )
         )
 
         print(
@@ -680,6 +716,14 @@ class RoseEngine(KnowledgeEngine):
             flower=MATCH.flower,
             color=MATCH.color,
             count=MATCH.need_count
+        ),
+        NOT(
+            Delivered(
+                state_id=MATCH.state_id,
+                pavilion=MATCH.pavilion,
+                flower=MATCH.flower,
+                color=MATCH.color
+            )
         )
     )
     def match_load_with_need(
@@ -771,4 +815,31 @@ class RoseEngine(KnowledgeEngine):
             FinalState(
                 state_id=-1
             )
+        )
+
+    # ==================================
+    # REMOVE EMPTY LOAD
+    # ==================================
+
+    @Rule(
+        AS.load << RobotLoad(
+            state_id=MATCH.state_id,
+            flower=MATCH.flower,
+            color=MATCH.color,
+            count=0
+        )
+    )
+    def remove_empty_load(
+        self,
+        load,
+        flower,
+        color
+    ):
+
+        self.retract(
+            load
+        )
+
+        print(
+            f'\nLoad consumed: {flower} - {color}'
         )

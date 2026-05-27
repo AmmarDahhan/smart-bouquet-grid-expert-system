@@ -141,3 +141,6 @@ class MatchingLoad(Fact):
 
 class AllNeedsCompleted(Fact):
     pass
+
+class Delivered(Fact):
+    pass
