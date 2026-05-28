@@ -144,3 +144,9 @@ class AllNeedsCompleted(Fact):
 
 class Delivered(Fact):
     pass
+
+class ActiveState(Fact):
+    pass
+
+class MovesGenerated(Fact):
+    state_id = Field(int)

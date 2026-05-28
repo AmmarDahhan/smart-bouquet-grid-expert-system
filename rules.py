@@ -16,17 +16,19 @@ class RoseEngine(KnowledgeEngine):
             robot_x=MATCH.x,
             robot_y=MATCH.y,
             cost=MATCH.cost
+        ),
+        ActiveState(
+            state_id=MATCH.state_id
+        ),
+        NOT(
+            MovesGenerated(
+                state_id=MATCH.state_id
+            )
         )
         ,
         salience=40
     )
-    def generate_move_right(
-        self,
-        state_id,
-        x,
-        y,
-        cost
-    ):
+    def generate_move_right(self,state_id,x,y,cost):
 
         self.declare(
             CandidateMove(
@@ -35,6 +37,11 @@ class RoseEngine(KnowledgeEngine):
                 new_x=x + 1,
                 new_y=y,
                 new_cost=cost + 1
+            )
+        )
+        self.declare(
+            MovesGenerated(
+                state_id=state_id
             )
         )
 
@@ -49,17 +56,19 @@ class RoseEngine(KnowledgeEngine):
             robot_x=MATCH.x,
             robot_y=MATCH.y,
             cost=MATCH.cost
+        ),
+        ActiveState(
+            state_id=MATCH.state_id
+        ),
+        NOT(
+            MovesGenerated(
+                state_id=MATCH.state_id
+            )
         )
         ,
         salience=20
     )
-    def generate_move_left(
-        self,
-        state_id,
-        x,
-        y,
-        cost
-    ):
+    def generate_move_left(self,state_id,x,y,cost):
 
         self.declare(
             CandidateMove(
@@ -82,17 +91,19 @@ class RoseEngine(KnowledgeEngine):
             robot_x=MATCH.x,
             robot_y=MATCH.y,
             cost=MATCH.cost
+        ),
+        ActiveState(
+            state_id=MATCH.state_id
+        ),
+        NOT(
+            MovesGenerated(
+                state_id=MATCH.state_id
+            )
         )
         ,
         salience=10
     )
-    def generate_move_up(
-        self,
-        state_id,
-        x,
-        y,
-        cost
-    ):
+    def generate_move_up(self,state_id,x,y,cost):
 
         self.declare(
             CandidateMove(
@@ -115,17 +126,19 @@ class RoseEngine(KnowledgeEngine):
             robot_x=MATCH.x,
             robot_y=MATCH.y,
             cost=MATCH.cost
+        ),
+        ActiveState(
+            state_id=MATCH.state_id
+        ),
+        NOT(
+            MovesGenerated(
+                state_id=MATCH.state_id
+            )
         )
         ,
         salience=30
     )
-    def generate_move_down(
-        self,
-        state_id,
-        x,
-        y,
-        cost
-    ):
+    def generate_move_down(self,state_id,x,y,cost):
 
         self.declare(
             CandidateMove(
@@ -167,14 +180,7 @@ class RoseEngine(KnowledgeEngine):
             )
         )
     )
-    def validate_move(
-        self,
-        parent,
-        action,
-        x,
-        y,
-        cost
-    ):
+    def validate_move(self,parent,action,x,y,cost):
 
         self.declare(
             ValidMove(
@@ -198,13 +204,7 @@ class RoseEngine(KnowledgeEngine):
             new_y=MATCH.y
         )
     )
-    def show_valid_move(
-        self,
-        parent,
-        action,
-        x,
-        y
-    ):
+    def show_valid_move(self,parent,action,x,y):
 
         print(
             f'Valid move from state {parent}'
@@ -230,19 +230,15 @@ class RoseEngine(KnowledgeEngine):
             new_x=MATCH.x,
             new_y=MATCH.y,
             new_cost=MATCH.cost
+        ),
+        NOT(
+            StateSignature(
+                robot_x=MATCH.x,
+                robot_y=MATCH.y
+            )
         )
     )
-    def generate_state(
-        self,
-        counter,
-        valid_move,
-        counter_value,
-        parent,
-        action,
-        x,
-        y,
-        cost
-    ):
+    def generate_state(self,counter,valid_move,counter_value,parent,action,x,y,cost):
 
         new_state_id = counter_value + 1
 
@@ -326,13 +322,7 @@ class RoseEngine(KnowledgeEngine):
             )
         )
     )
-    def propagate_robot_load(
-        self,
-        new_state,
-        flower,
-        color,
-        count
-    ):
+    def propagate_robot_load(self,new_state,flower,color,count):
 
         self.declare(
             RobotLoad(
@@ -366,10 +356,7 @@ class RoseEngine(KnowledgeEngine):
         TEST(lambda wx, rx: wx == rx),
         TEST(lambda wy, ry: wy == ry)
     )
-    def detect_robot_at_warehouse(
-        self,
-        state_id
-    ):
+    def detect_robot_at_warehouse(self,state_id):
 
         self.declare(
             RobotAtWarehouse(
@@ -396,14 +383,7 @@ class RoseEngine(KnowledgeEngine):
             count=MATCH.count
         )
     )
-    def load_bouquet(
-        self,
-        bouquet,
-        state_id,
-        flower,
-        color,
-        count
-    ):
+    def load_bouquet(self,bouquet,state_id,flower,color,count):
 
         self.declare(
             RobotLoad(
@@ -442,10 +422,7 @@ class RoseEngine(KnowledgeEngine):
             )
         )
     )
-    def detect_robot_has_load(
-        self,
-        state_id
-    ):
+    def detect_robot_has_load(self,state_id):
 
         self.declare(
             RobotHasLoad(
@@ -478,11 +455,7 @@ class RoseEngine(KnowledgeEngine):
         TEST(lambda px, rx: px == rx),
         TEST(lambda py, ry: py == ry)
     )
-    def detect_robot_at_pavilion(
-        self,
-        state_id,
-        name
-    ):
+    def detect_robot_at_pavilion(self,state_id,name):
 
         self.declare(
             RobotAtPavilion(
@@ -533,17 +506,7 @@ class RoseEngine(KnowledgeEngine):
             )
         )
     )
-    def unload_bouquet(
-        self,
-        load,
-        need,
-        state_id,
-        pavilion,
-        flower,
-        color,
-        need_count,
-        load_count
-    ):
+    def unload_bouquet(self,load,need,state_id,pavilion,flower,color,need_count,load_count):
         
         # self.modify(
         #     load,
@@ -592,12 +555,7 @@ class RoseEngine(KnowledgeEngine):
             action=MATCH.action
         )
     )
-    def show_final_path(
-        self,
-        state_id,
-        parent,
-        action
-    ):
+    def show_final_path(self,state_id,parent,action):
 
         print(
             f'\nFINAL STATE: {state_id}'
@@ -620,10 +578,7 @@ class RoseEngine(KnowledgeEngine):
             state_id=MATCH.state_id
         )
     )
-    def start_path_trace(
-        self,
-        state_id
-    ):
+    def start_path_trace(self,state_id):
 
         self.declare(
             TracePath(
@@ -648,14 +603,7 @@ class RoseEngine(KnowledgeEngine):
             robot_y=MATCH.y
         )
     )
-    def trace_path(
-        self,
-        state_id,
-        parent,
-        action,
-        x,
-        y
-    ):
+    def trace_path(self,state_id,parent,action,x,y):
 
         print(
             f'\nPATH STATE {state_id}'
@@ -684,9 +632,7 @@ class RoseEngine(KnowledgeEngine):
             state_id=1
         )
     )
-    def trace_root(
-        self
-    ):
+    def trace_root(self):
 
         print(
             '\nReached initial state'
@@ -726,13 +672,7 @@ class RoseEngine(KnowledgeEngine):
             )
         )
     )
-    def match_load_with_need(
-        self,
-        state_id,
-        pavilion,
-        flower,
-        color
-    ):
+    def match_load_with_need(self,state_id,pavilion,flower,color):
 
         self.declare(
             MatchingLoad(
@@ -759,13 +699,7 @@ class RoseEngine(KnowledgeEngine):
             count=0
         )
     )
-    def remove_completed_need(
-        self,
-        need,
-        pavilion,
-        flower,
-        color
-    ):
+    def remove_completed_need(self,need,pavilion,flower,color):
 
         self.retract(
             need
@@ -784,9 +718,7 @@ class RoseEngine(KnowledgeEngine):
             PavilionNeed()
         )
     )
-    def all_needs_completed(
-        self
-    ):
+    def all_needs_completed(self):
 
         self.declare(
             AllNeedsCompleted()
@@ -803,9 +735,7 @@ class RoseEngine(KnowledgeEngine):
     @Rule(
         AllNeedsCompleted()
     )
-    def final_goal(
-        self
-    ):
+    def final_goal(self):
 
         print(
             '\nALL PAVILIONS COMPLETED'
@@ -829,12 +759,7 @@ class RoseEngine(KnowledgeEngine):
             count=0
         )
     )
-    def remove_empty_load(
-        self,
-        load,
-        flower,
-        color
-    ):
+    def remove_empty_load(self,load,flower,color):
 
         self.retract(
             load
@@ -842,4 +767,50 @@ class RoseEngine(KnowledgeEngine):
 
         print(
             f'\nLoad consumed: {flower} - {color}'
+        )
+
+    # ==================================
+    # ACTIVATE NEXT STATE
+    # ==================================
+
+    @Rule(
+        AS.active << ActiveState(
+            state_id=MATCH.current_state
+        ),
+
+        AS.state << State(
+            id=MATCH.current_state
+        ),
+
+        State(
+            id=MATCH.next_state,
+            parent=MATCH.current_state
+        ),
+
+        NOT(
+            MovesGenerated(
+                state_id=MATCH.current_state
+            )
+        ),
+
+        salience=-10
+    )
+    def activate_next_state(self,active,state,current_state,next_state):
+
+        self.retract(active)
+
+        self.declare(
+            MovesGenerated(
+                state_id=current_state
+            )
+        )
+
+        self.declare(
+            ActiveState(
+                state_id=next_state
+            )
+        )
+
+        print(
+            f'\nActive state moved to {next_state}'
         )

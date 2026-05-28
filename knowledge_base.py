@@ -30,6 +30,12 @@ def load_initial_facts(engine):
         )
     )
 
+    engine.declare(
+        ActiveState(
+            state_id=1
+        )
+    )
+
     # Pavilion 1
 
     engine.declare(
