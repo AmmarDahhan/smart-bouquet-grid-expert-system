@@ -26,7 +26,8 @@ def load_initial_facts(engine):
             action='start',
             robot_x=3,
             robot_y=1,
-            cost=0
+            cost=0,
+            path=((3, 1),)
         )
     )
 
@@ -36,41 +37,9 @@ def load_initial_facts(engine):
         )
     )
 
-    # Pavilion 1
-
     engine.declare(
-        Pavilion(
-            name='p1',
-            flower='rose',
-            x=4,
-            y=2
-        )
-    )
-
-    engine.declare(
-        Need(
-            state_id=1,
-            pavilion='p1',
-            color='red',
-            count=2
-        )
-    )
-
-    engine.declare(
-        Need(
-            state_id=1,
-            pavilion='p1',
-            color='pink',
-            count=1
-        )
-    )
-
-    engine.declare(
-        Need(
-            state_id=1,
-            pavilion='p1',
-            color='white',
-            count=1
+        OpenState(
+            state_id=1
         )
     )
 
@@ -115,11 +84,24 @@ def load_initial_facts(engine):
             flower='rose',
             x=4,
             y=2
+        ),
+        Pavilion(
+            name='p2',
+            flower='tulip',
+            x=5,
+            y=5
+        ),
+        Pavilion(
+            name='p3',
+            flower='orchid',
+            x=1,
+            y=4
         )
     )
 
     engine.declare(
         PavilionNeed(
+            state_id=1,
             pavilion='p1',
             flower='rose',
             color='red',
@@ -127,6 +109,7 @@ def load_initial_facts(engine):
         ),
 
         PavilionNeed(
+            state_id=1,
             pavilion='p1',
             flower='rose',
             color='white',
@@ -134,6 +117,7 @@ def load_initial_facts(engine):
         ),
 
         PavilionNeed(
+            state_id=1,
             pavilion='p2',
             flower='tulip',
             color='yellow',
@@ -141,9 +125,16 @@ def load_initial_facts(engine):
         ),
 
         PavilionNeed(
+            state_id=1,
             pavilion='p3',
             flower='orchid',
             color='purple',
             count=1
         ),
     )
+
+    engine.declare(
+        RobotCapacity(
+            value=3
+        )
+    ) 
