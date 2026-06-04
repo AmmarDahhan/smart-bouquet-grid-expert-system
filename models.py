@@ -1,10 +1,12 @@
 from experta import *
 
+
 class State(Fact):
     """
     Search state
     """
     pass
+
 
 class Warehouse(Fact):
     """
@@ -12,17 +14,34 @@ class Warehouse(Fact):
     """
     pass
 
+
+class Pavilion(Fact):
+    """
+    Pavilion static information
+    """
+    pass
+
+
+class Need(Fact):
+    """
+    Remaining pavilion needs
+    """
+    pass
+
+
 class Load(Fact):
     """
     Robot carried bouquets
     """
     pass
 
+
 class Grid(Fact):
     """
     Grid dimensions
     """
     pass
+
 
 class Goal(Fact):
     """
@@ -132,9 +151,7 @@ class ActiveState(Fact):
 class MovesGenerated(Fact):
     state_id = Field(int)
 
-class NextStateCandidate(Fact):
-    pass
-class OpenState(Fact):
-    pass
-class RobotCapacity(Fact):
-    pass
+class StateFValue(Fact):
+    """F value for A* (g + h)"""
+    state_id = Field(int)
+    f_value = Field(int)
