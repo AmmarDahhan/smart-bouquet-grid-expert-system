@@ -6,7 +6,8 @@ from models import *
 class RoseEngine(KnowledgeEngine):
 
     # ==================================
-    # GENERATE RIGHT MOVE
+    # PHASE 3: GENERATE MOVES (DFS)
+    # Salience determines order: right(40) > down(30) > left(20) > up(10)
     # ==================================
 
     @Rule(
@@ -24,12 +25,11 @@ class RoseEngine(KnowledgeEngine):
             MovesGenerated(
                 state_id=MATCH.state_id
             )
-        )
-        ,
+        ),
         salience=40
     )
-    def generate_move_right(self,state_id,x,y,cost):
-
+    def generate_moves(self, state_id, x, y, cost):
+        # Generate all 4 moves as candidate moves
         self.declare(
             CandidateMove(
                 parent_state=state_id,
@@ -40,36 +40,14 @@ class RoseEngine(KnowledgeEngine):
             )
         )
         self.declare(
-            MovesGenerated(
-                state_id=state_id
+            CandidateMove(
+                parent_state=state_id,
+                action='move_down',
+                new_x=x,
+                new_y=y + 1,
+                new_cost=cost + 1
             )
         )
-
-    # ==================================
-    # GENERATE LEFT MOVE
-    # ==================================
-
-    @Rule(
-        NOT(FinalState()),
-        State(
-            id=MATCH.state_id,
-            robot_x=MATCH.x,
-            robot_y=MATCH.y,
-            cost=MATCH.cost
-        ),
-        ActiveState(
-            state_id=MATCH.state_id
-        ),
-        NOT(
-            MovesGenerated(
-                state_id=MATCH.state_id
-            )
-        )
-        ,
-        salience=20
-    )
-    def generate_move_left(self,state_id,x,y,cost):
-
         self.declare(
             CandidateMove(
                 parent_state=state_id,
@@ -79,32 +57,6 @@ class RoseEngine(KnowledgeEngine):
                 new_cost=cost + 1
             )
         )
-
-    # ==================================
-    # GENERATE UP MOVE
-    # ==================================
-
-    @Rule(
-        NOT(FinalState()),
-        State(
-            id=MATCH.state_id,
-            robot_x=MATCH.x,
-            robot_y=MATCH.y,
-            cost=MATCH.cost
-        ),
-        ActiveState(
-            state_id=MATCH.state_id
-        ),
-        NOT(
-            MovesGenerated(
-                state_id=MATCH.state_id
-            )
-        )
-        ,
-        salience=10
-    )
-    def generate_move_up(self,state_id,x,y,cost):
-
         self.declare(
             CandidateMove(
                 parent_state=state_id,
@@ -114,44 +66,14 @@ class RoseEngine(KnowledgeEngine):
                 new_cost=cost + 1
             )
         )
-
-    # ==================================
-    # GENERATE DOWN MOVE
-    # ==================================
-
-    @Rule(
-        NOT(FinalState()),
-        State(
-            id=MATCH.state_id,
-            robot_x=MATCH.x,
-            robot_y=MATCH.y,
-            cost=MATCH.cost
-        ),
-        ActiveState(
-            state_id=MATCH.state_id
-        ),
-        NOT(
-            MovesGenerated(
-                state_id=MATCH.state_id
-            )
-        )
-        ,
-        salience=30
-    )
-    def generate_move_down(self,state_id,x,y,cost):
-
         self.declare(
-            CandidateMove(
-                parent_state=state_id,
-                action='move_down',
-                new_x=x,
-                new_y=y + 1,
-                new_cost=cost + 1
+            MovesGenerated(
+                state_id=state_id
             )
         )
-    
+
     # ==================================
-    # VALIDATE GRID BOUNDARIES + DUPLICATES
+    # PHASE 4: VALIDATE MOVES (with duplicate pruning)
     # ==================================
 
     @Rule(
@@ -159,7 +81,6 @@ class RoseEngine(KnowledgeEngine):
             width=MATCH.width,
             height=MATCH.height
         ),
-
         CandidateMove(
             parent_state=MATCH.parent,
             action=MATCH.action,
@@ -167,12 +88,8 @@ class RoseEngine(KnowledgeEngine):
             new_y=MATCH.y,
             new_cost=MATCH.cost
         ),
-
-        TEST(lambda x: x >= 1),
-        TEST(lambda y: y >= 1),
-        TEST(lambda x, width: x <= width),
-        TEST(lambda y, height: y <= height),
-
+        TEST(lambda x, width: 1 <= x <= width),
+        TEST(lambda y, height: 1 <= y <= height),
         NOT(
             StateSignature(
                 robot_x=MATCH.x,
@@ -180,8 +97,7 @@ class RoseEngine(KnowledgeEngine):
             )
         )
     )
-    def validate_move(self,parent,action,x,y,cost):
-
+    def validate_move(self, parent, action, x, y, cost):
         self.declare(
             ValidMove(
                 parent_state=parent,
@@ -193,59 +109,25 @@ class RoseEngine(KnowledgeEngine):
         )
 
     # ==================================
-    # SHOW VALID MOVES
-    # ==================================
-
-    @Rule(
-        ValidMove(
-            parent_state=MATCH.parent,
-            action=MATCH.action,
-            new_x=MATCH.x,
-            new_y=MATCH.y
-        )
-    )
-    def show_valid_move(self,parent,action,x,y):
-
-        print(
-            f'Valid move from state {parent}'
-        )
-
-        print(
-            f'{action} -> ({x},{y})'
-        )
-
-
-    # ==================================
-    # GENERATE NEW STATE
+    # PHASE 3: GENERATE NEW STATES
     # ==================================
 
     @Rule(
         AS.counter << StateCounter(
             value=MATCH.counter_value
         ),
-
         AS.valid_move << ValidMove(
             parent_state=MATCH.parent,
             action=MATCH.action,
             new_x=MATCH.x,
             new_y=MATCH.y,
             new_cost=MATCH.cost
-        ),
-        NOT(
-            StateSignature(
-                robot_x=MATCH.x,
-                robot_y=MATCH.y
-            )
         )
     )
-    def generate_state(self,counter,valid_move,counter_value,parent,action,x,y,cost):
-
+    def generate_state(self, counter, valid_move, counter_value, parent, action, x, y, cost):
         new_state_id = counter_value + 1
 
-        self.modify(
-            counter,
-            value=new_state_id
-        )
+        self.modify(counter, value=new_state_id)
 
         self.declare(
             State(
@@ -265,65 +147,110 @@ class RoseEngine(KnowledgeEngine):
             )
         )
 
-        self.retract(
-            valid_move
-        )
+        self.retract(valid_move)
 
-        print(
-            f'\nGenerated State {new_state_id}'
-        )
-
-        print(
-            f'Parent: {parent}'
-        )
-
-        print(
-            f'Action: {action}'
-        )
-
-        print(
-            f'Position: ({x},{y})'
-        )
-
-        print(
-            f'Cost: {cost}'
-        )
+        print(f'\n>>> Generated State {new_state_id}')
+        print(f'    Parent: {parent} | Action: {action}')
+        print(f'    Position: ({x},{y}) | Cost: {cost}')
 
     # ==================================
-    # PROPAGATE ROBOT LOAD
+    # PHASE 5: DETECT ROBOT AT WAREHOUSE
     # ==================================
 
     @Rule(
-        State(
-            id=MATCH.new_state,
-            parent=MATCH.parent_state
+        Warehouse(
+            x=MATCH.wx,
+            y=MATCH.wy
         ),
+        State(
+            id=MATCH.state_id,
+            robot_x=MATCH.rx,
+            robot_y=MATCH.ry
+        ),
+        TEST(lambda wx, rx: wx == rx),
+        TEST(lambda wy, ry: wy == ry)
+    )
+    def detect_robot_at_warehouse(self, state_id):
+        self.declare(
+            RobotAtWarehouse(
+                state_id=state_id
+            )
+        )
+        print(f'\n[WAREHOUSE] Robot reached warehouse in state {state_id}')
 
-        RobotLoad(
-            state_id=MATCH.parent_state,
+    # ==================================
+    # PHASE 5: LOAD BOUQUET FROM WAREHOUSE
+    # ==================================
+
+    @Rule(
+        RobotAtWarehouse(
+            state_id=MATCH.state_id
+        ),
+        AS.bouquet << Bouquet(
             flower=MATCH.flower,
             color=MATCH.color,
             count=MATCH.count
         ),
-
         NOT(
-            Delivered(
-                state_id=MATCH.parent_state,
+            RobotLoad(
+                state_id=MATCH.state_id,
                 flower=MATCH.flower,
                 color=MATCH.color
             )
-        ),        
+        ),
+        salience=50
+    )
+    def load_bouquet(self, bouquet, state_id, flower, color, count):
+        self.declare(
+            RobotLoad(
+                state_id=state_id,
+                flower=flower,
+                color=color,
+                count=count
+            )
+        )
+        self.retract(bouquet)
+        print(f'[LOAD] Loaded {count}x {flower} ({color}) in state {state_id}')
 
+    # ==================================
+    # PHASE 5: PROPAGATE ROBOT LOAD (sibling states)
+    # If robot has load in one state at location X, all states at location X have that load
+    # ==================================
+
+    @Rule(
+        State(
+            id=MATCH.state_with_load,
+            robot_x=MATCH.x,
+            robot_y=MATCH.y
+        ),
+        State(
+            id=MATCH.new_state,
+            robot_x=MATCH.x,
+            robot_y=MATCH.y
+        ),
+        RobotLoad(
+            state_id=MATCH.state_with_load,
+            flower=MATCH.flower,
+            color=MATCH.color,
+            count=MATCH.count
+        ),
         NOT(
             RobotLoad(
                 state_id=MATCH.new_state,
                 flower=MATCH.flower,
                 color=MATCH.color
             )
-        )
+        ),
+        NOT(
+            Delivered(
+                state_id=MATCH.state_with_load,
+                flower=MATCH.flower,
+                color=MATCH.color
+            )
+        ),
+        salience=50
     )
-    def propagate_robot_load(self,new_state,flower,color,count):
-
+    def sync_loads_at_position(self, state_with_load, new_state, flower, color, count):
         self.declare(
             RobotLoad(
                 state_id=new_state,
@@ -333,143 +260,35 @@ class RoseEngine(KnowledgeEngine):
             )
         )
 
-        print(
-            f'\nLoad propagated to state {new_state}'
-        )
-
     # ==================================
-    # DETECT ROBOT AT WAREHOUSE
-    # ==================================
-
-    @Rule(
-        Warehouse(
-            x=MATCH.wx,
-            y=MATCH.wy
-        ),
-
-        State(
-            id=MATCH.state_id,
-            robot_x=MATCH.rx,
-            robot_y=MATCH.ry
-        ),
-
-        TEST(lambda wx, rx: wx == rx),
-        TEST(lambda wy, ry: wy == ry)
-    )
-    def detect_robot_at_warehouse(self,state_id):
-
-        self.declare(
-            RobotAtWarehouse(
-                state_id=state_id
-            )
-        )
-
-        print(
-            f'\nRobot reached warehouse in state {state_id}'
-        )
-
-    # ==================================
-    # LOAD BOUQUET
-    # ==================================
-
-    @Rule(
-        RobotAtWarehouse(
-            state_id=MATCH.state_id
-        ),
-
-        AS.bouquet << Bouquet(
-            flower=MATCH.flower,
-            color=MATCH.color,
-            count=MATCH.count
-        )
-    )
-    def load_bouquet(self,bouquet,state_id,flower,color,count):
-
-        self.declare(
-            RobotLoad(
-                state_id=state_id,
-                flower=flower,
-                color=color,
-                count=count
-            )
-        )
-
-        self.retract(
-            bouquet
-        )
-
-        print(
-            f'\nLoaded bouquet in state {state_id}'
-        )
-
-        print(
-            f'{flower} - {color} - {count}'
-        )
-
-    # ==================================
-    # DETECT ROBOT HAS LOAD
-    # ==================================
-
-    @Rule(
-        RobotLoad(
-            state_id=MATCH.state_id
-        ),
-        NOT(
-            Delivered(
-                state_id=MATCH.state_id,
-                flower=MATCH.flower,
-                color=MATCH.color
-            )
-        )
-    )
-    def detect_robot_has_load(self,state_id):
-
-        self.declare(
-            RobotHasLoad(
-                state_id=state_id
-            )
-        )
-
-        print(
-            f'\nRobot has load in state {state_id}'
-        )
-
-    # ==================================
-    # DETECT ROBOT AT PAVILION
+    # PHASE 5: DETECT ROBOT AT PAVILION
     # ==================================
 
     @Rule(
         Pavilion(
             name=MATCH.name,
-            flower=MATCH.flower,
             x=MATCH.px,
             y=MATCH.py
         ),
-
         State(
             id=MATCH.state_id,
             robot_x=MATCH.rx,
             robot_y=MATCH.ry
         ),
-
         TEST(lambda px, rx: px == rx),
         TEST(lambda py, ry: py == ry)
     )
-    def detect_robot_at_pavilion(self,state_id,name):
-
+    def detect_robot_at_pavilion(self, state_id, name):
         self.declare(
             RobotAtPavilion(
                 state_id=state_id,
                 pavilion=name
             )
         )
-
-        print(
-            f'\nRobot reached pavilion {name}'
-        )
+        print(f'\n[PAVILION] Robot reached pavilion {name} in state {state_id}')
 
     # ==================================
-    # UNLOAD BOUQUET
+    # PHASE 5: UNLOAD BOUQUET AT PAVILION
     # ==================================
 
     @Rule(
@@ -477,14 +296,12 @@ class RoseEngine(KnowledgeEngine):
             state_id=MATCH.state_id,
             pavilion=MATCH.pavilion
         ),
-
         PavilionNeed(
             pavilion=MATCH.pavilion,
             flower=MATCH.flower,
             color=MATCH.color,
             count=MATCH.need_count
         ),
-
         AS.load << RobotLoad(
             state_id=MATCH.state_id,
             flower=MATCH.flower,
@@ -504,25 +321,12 @@ class RoseEngine(KnowledgeEngine):
                 flower=MATCH.flower,
                 color=MATCH.color
             )
-        )
+        ),
+        salience=50
     )
-    def unload_bouquet(self,load,need,state_id,pavilion,flower,color,need_count,load_count):
-        
-        # self.modify(
-        #     load,
-        #     count=load_count - 1
-        # )
-        self.retract(
-            load
-        )
-        # self.retract(
-        #     need
-        # )
-        self.modify(
-            need,
-            count=need_count - 1
-        )
-
+    def unload_bouquet(self, load, need, state_id, pavilion, flower, color, need_count, load_count):
+        self.retract(load)
+        self.modify(need, count=need_count - 1)
         self.declare(
             Delivered(
                 state_id=state_id,
@@ -531,92 +335,112 @@ class RoseEngine(KnowledgeEngine):
                 color=color
             )
         )
-
-        print(
-            f'\nUnloaded bouquet at pavilion {pavilion}'
-        )
-
-        print(
-            f'{flower} - {color}'
-        )
+        print(f'[UNLOAD] Delivered {flower} ({color}) to pavilion {pavilion}')
 
     # ==================================
-    # SHOW FINAL PATH
+    # PHASE 5: REMOVE EMPTY LOADS
     # ==================================
 
     @Rule(
-        FinalState(
-            state_id=MATCH.state_id
+        AS.load << RobotLoad(
+            state_id=MATCH.state_id,
+            flower=MATCH.flower,
+            color=MATCH.color,
+            count=0
         ),
-
-        State(
-            id=MATCH.state_id,
-            parent=MATCH.parent,
-            action=MATCH.action
-        )
+        salience=45
     )
-    def show_final_path(self,state_id,parent,action):
-
-        print(
-            f'\nFINAL STATE: {state_id}'
-        )
-
-        print(
-            f'Last action: {action}'
-        )
-
-        print(
-            f'Parent state: {parent}'
-        )
+    def remove_empty_load(self, load):
+        self.retract(load)
 
     # ==================================
-    # START PATH TRACE
+    # PHASE 5: REMOVE COMPLETED NEEDS
     # ==================================
 
     @Rule(
-        FinalState(
-            state_id=MATCH.state_id
-        )
+        AS.need << PavilionNeed(
+            pavilion=MATCH.pavilion,
+            flower=MATCH.flower,
+            color=MATCH.color,
+            count=0
+        ),
+        salience=45
     )
-    def start_path_trace(self,state_id):
+    def remove_completed_need(self, need, pavilion):
+        self.retract(need)
+        print(f'[COMPLETED] Pavilion {pavilion} need satisfied')
 
+    # ==================================
+    # PHASE 6: DETECT ALL NEEDS COMPLETED
+    # ==================================
+
+    @Rule(
+        NOT(
+            PavilionNeed()
+        ),
+        salience=100
+    )
+    def all_needs_completed(self):
         self.declare(
-            TracePath(
-                state_id=state_id
+            AllNeedsCompleted()
+        )
+        print('\n=== ALL PAVILION NEEDS COMPLETED ===')
+
+    # ==================================
+    # PHASE 6: MARK FINAL STATE
+    # ==================================
+
+    @Rule(
+        AllNeedsCompleted(),
+        NOT(
+            RobotLoad()
+        ),
+        salience=100
+    )
+    def mark_final_state(self):
+        self.declare(
+            FinalState(
+                state_id=-1
             )
         )
+        print('=== GOAL REACHED ===')
 
     # ==================================
-    # TRACE PATH
+    # PHASE 7: START PATH TRACING
+    # ==================================
+
+    @Rule(
+        FinalState(),
+        salience=99
+    )
+    def start_path_trace(self):
+        self.declare(
+            TracePath(
+                state_id=-1
+            )
+        )
+        print('\n>>> TRACING PATH <<<')
+
+    # ==================================
+    # PHASE 7: TRACE PATH BACKWARDS
     # ==================================
 
     @Rule(
         TracePath(
-            state_id=MATCH.state_id
+            state_id=MATCH.current_id
         ),
-
         State(
-            id=MATCH.state_id,
+            id=MATCH.current_id,
             parent=MATCH.parent,
             action=MATCH.action,
             robot_x=MATCH.x,
-            robot_y=MATCH.y
-        )
+            robot_y=MATCH.y,
+            cost=MATCH.cost
+        ),
+        TEST(lambda cid: cid > 0)
     )
-    def trace_path(self,state_id,parent,action,x,y):
-
-        print(
-            f'\nPATH STATE {state_id}'
-        )
-
-        print(
-            f'Action: {action}'
-        )
-
-        print(
-            f'Position: ({x},{y})'
-        )
-
+    def trace_path_step(self, current_id, parent, action, x, y, cost):
+        print(f'PATH[{current_id}]: {action} -> ({x},{y}) cost={cost}')
         self.declare(
             TracePath(
                 state_id=parent
@@ -624,193 +448,47 @@ class RoseEngine(KnowledgeEngine):
         )
 
     # ==================================
-    # TRACE ROOT STATE
+    # PHASE 7: TRACE ROOT STATE
     # ==================================
 
     @Rule(
         TracePath(
-            state_id=1
-        )
-    )
-    def trace_root(self):
-
-        print(
-            '\nReached initial state'
-        )
-
-        # self.halt()
-
-    # ==================================
-    # MATCH LOAD WITH PAVILION NEED
-    # ==================================
-
-    @Rule(
-        RobotAtPavilion(
-            state_id=MATCH.state_id,
-            pavilion=MATCH.pavilion
+            state_id=MATCH.state_id
         ),
-
-        RobotLoad(
-            state_id=MATCH.state_id,
-            flower=MATCH.flower,
-            color=MATCH.color,
-            count=MATCH.load_count
+        State(
+            id=1,
+            robot_x=MATCH.x,
+            robot_y=MATCH.y
         ),
-
-        PavilionNeed(
-            pavilion=MATCH.pavilion,
-            flower=MATCH.flower,
-            color=MATCH.color,
-            count=MATCH.need_count
-        ),
-        NOT(
-            Delivered(
-                state_id=MATCH.state_id,
-                pavilion=MATCH.pavilion,
-                flower=MATCH.flower,
-                color=MATCH.color
-            )
-        )
+        TEST(lambda sid: sid == 1)
     )
-    def match_load_with_need(self,state_id,pavilion,flower,color):
-
-        self.declare(
-            MatchingLoad(
-                state_id=state_id,
-                pavilion=pavilion,
-                flower=flower,
-                color=color
-            )
-        )
-
-        print(
-            f'\nMatching bouquet for pavilion {pavilion}'
-        )    
+    def trace_root_state(self, state_id, x, y):
+        print(f'PATH[1]: start -> ({x},{y}) cost=0')
+        print('>>> PATH TRACE COMPLETE')
 
     # ==================================
-    # REMOVE COMPLETED NEED
-    # ==================================
-
-    @Rule(
-        AS.need << PavilionNeed(
-            pavilion=MATCH.pavilion,
-            flower=MATCH.flower,
-            color=MATCH.color,
-            count=0
-        )
-    )
-    def remove_completed_need(self,need,pavilion,flower,color):
-
-        self.retract(
-            need
-        )
-
-        print(
-            f'\nNeed completed for pavilion {pavilion}'
-        )
-
-    # ==================================
-    # DETECT ALL NEEDS COMPLETED
-    # ==================================
-
-    @Rule(
-        NOT(
-            PavilionNeed()
-        )
-    )
-    def all_needs_completed(self):
-
-        self.declare(
-            AllNeedsCompleted()
-        )
-
-        print(
-            '\nALL PAVILION NEEDS COMPLETED'
-        )
-
-    # ==================================
-    # FINAL GOAL
-    # ==================================
-
-    @Rule(
-        AllNeedsCompleted()
-    )
-    def final_goal(self):
-
-        print(
-            '\nALL PAVILIONS COMPLETED'
-        )
-
-        self.declare(
-            FinalState(
-                state_id=-1
-            )
-        )
-
-    # ==================================
-    # REMOVE EMPTY LOAD
-    # ==================================
-
-    @Rule(
-        AS.load << RobotLoad(
-            state_id=MATCH.state_id,
-            flower=MATCH.flower,
-            color=MATCH.color,
-            count=0
-        )
-    )
-    def remove_empty_load(self,load,flower,color):
-
-        self.retract(
-            load
-        )
-
-        print(
-            f'\nLoad consumed: {flower} - {color}'
-        )
-
-    # ==================================
-    # ACTIVATE NEXT STATE
+    # PHASE 3: ACTIVATE NEXT STATE (DFS)
+    # Lower salience fires after generation/loading/unloading
     # ==================================
 
     @Rule(
         AS.active << ActiveState(
             state_id=MATCH.current_state
         ),
-
-        AS.state << State(
-            id=MATCH.current_state
-        ),
-
         State(
             id=MATCH.next_state,
             parent=MATCH.current_state
         ),
-
-        NOT(
-            MovesGenerated(
-                state_id=MATCH.current_state
-            )
+        MovesGenerated(
+            state_id=MATCH.current_state
         ),
-
         salience=-10
     )
-    def activate_next_state(self,active,state,current_state,next_state):
-
+    def activate_next_state(self, active, current_state, next_state):
         self.retract(active)
-
-        self.declare(
-            MovesGenerated(
-                state_id=current_state
-            )
-        )
-
         self.declare(
             ActiveState(
                 state_id=next_state
             )
         )
-
-        print(
-            f'\nActive state moved to {next_state}'
-        )
+        print(f'\n[SEARCH] Expanding state {next_state}...')
