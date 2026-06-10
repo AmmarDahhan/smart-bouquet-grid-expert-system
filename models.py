@@ -155,3 +155,6 @@ class StateFValue(Fact):
     """F value for A* (g + h)"""
     state_id = Field(int)
     f_value = Field(int)
+
+class OpenState(Fact):
+    pass

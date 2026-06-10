@@ -26,7 +26,8 @@ def load_initial_facts(engine):
             action='start',
             robot_x=3,
             robot_y=1,
-            cost=0
+            cost=0,
+            path=((3, 1),)
         )
     )
 
@@ -93,6 +94,7 @@ def load_initial_facts(engine):
     # Pavilion needs - P1 (rose pavilion)
     engine.declare(
         PavilionNeed(
+            state_id=1,
             pavilion='p1',
             flower='rose',
             color='red',
@@ -102,6 +104,7 @@ def load_initial_facts(engine):
 
     engine.declare(
         PavilionNeed(
+            state_id=1,
             pavilion='p1',
             flower='rose',
             color='pink',
@@ -111,6 +114,7 @@ def load_initial_facts(engine):
 
     engine.declare(
         PavilionNeed(
+            state_id=1,
             pavilion='p1',
             flower='rose',
             color='white',
@@ -121,6 +125,7 @@ def load_initial_facts(engine):
     # Pavilion needs - P2 (tulip pavilion)
     engine.declare(
         PavilionNeed(
+            state_id=1,
             pavilion='p2',
             flower='tulip',
             color='yellow',
@@ -131,6 +136,7 @@ def load_initial_facts(engine):
     # Pavilion needs - P3 (orchid pavilion)
     engine.declare(
         PavilionNeed(
+            state_id=1,
             pavilion='p3',
             flower='orchid',
             color='purple',
@@ -141,6 +147,7 @@ def load_initial_facts(engine):
     # Pavilion needs - P4 (juliet rose pavilion)
     engine.declare(
         PavilionNeed(
+            state_id=1,
             pavilion='p4',
             flower='juliet_rose',
             color='red',
