@@ -1,0 +1,386 @@
+=== Rose Gallery Robot - A* ===
+5x5 | WH:(2,3) | Start:(1,3) | p1(4,2) p2(3,4) p3(5,4) p4(2,5)
+
+
+>>> Generated State 2
+    Parent: 1 | Action: move_up
+    Position: (1,2) | Cost: 1
+
+>>> Generated State 3
+    Parent: 1 | Action: move_down
+    Position: (1,4) | Cost: 1
+
+>>> Generated State 4
+    Parent: 1 | Action: move_right
+    Position: (2,3) | Cost: 1
+
+[WAREHOUSE] Robot reached warehouse in state 4
+[A* SELECT] Expanding state 4...
+[MAX_LOAD] State 4: max load = 2
+[STRATEGY] State 4 chooses type: start with rose(red)
+[LOAD] Started loading: 2x rose (red) in state 4
+[LOAD] Added to load (by type): 1x rose (pink) in state 4
+[LOAD] Added to load (by type): 1x rose (white) in state 4
+
+>>> Generated State 5
+    Parent: 4 | Action: move_up
+    Position: (2,2) | Cost: 2
+
+>>> Generated State 6
+    Parent: 4 | Action: move_left
+    Position: (1,3) | Cost: 2
+
+>>> Generated State 7
+    Parent: 4 | Action: move_down
+    Position: (2,4) | Cost: 2
+
+>>> Generated State 8
+    Parent: 4 | Action: move_right
+    Position: (3,3) | Cost: 2
+[A* SELECT] Expanding state 5...
+
+>>> Generated State 9
+    Parent: 5 | Action: move_up
+    Position: (2,1) | Cost: 3
+
+>>> Generated State 10
+    Parent: 5 | Action: move_left
+    Position: (1,2) | Cost: 3
+
+>>> Generated State 11
+    Parent: 5 | Action: move_down
+    Position: (2,3) | Cost: 3
+
+[WAREHOUSE] Robot reached warehouse in state 11
+
+>>> Generated State 12
+    Parent: 5 | Action: move_right
+    Position: (3,2) | Cost: 3
+[A* SELECT] Expanding state 12...
+
+>>> Generated State 13
+    Parent: 12 | Action: move_up
+    Position: (3,1) | Cost: 4
+
+>>> Generated State 14
+    Parent: 12 | Action: move_down
+    Position: (3,3) | Cost: 4
+
+>>> Generated State 15
+    Parent: 12 | Action: move_right
+    Position: (4,2) | Cost: 4
+[A* SELECT] Expanding state 15...
+[PAVILION] Robot arrived at pavilion p1 in state 15
+[UNLOAD] Delivered 1x rose (white) to p1 in state 15
+[UNLOAD] Delivered 1x rose (pink) to p1 in state 15
+[UNLOAD] Delivered 2x rose (red) to p1 in state 15
+
+>>> Generated State 16
+    Parent: 15 | Action: move_up
+    Position: (4,1) | Cost: 5
+
+>>> Generated State 17
+    Parent: 15 | Action: move_left
+    Position: (3,2) | Cost: 5
+
+>>> Generated State 18
+    Parent: 15 | Action: move_down
+    Position: (4,3) | Cost: 5
+
+>>> Generated State 19
+    Parent: 15 | Action: move_right
+    Position: (5,2) | Cost: 5
+[A* SELECT] Expanding state 17...
+
+>>> Generated State 20
+    Parent: 17 | Action: move_up
+    Position: (3,1) | Cost: 6
+
+>>> Generated State 21
+    Parent: 17 | Action: move_left
+    Position: (2,2) | Cost: 6
+
+>>> Generated State 22
+    Parent: 17 | Action: move_down
+    Position: (3,3) | Cost: 6
+[A* SELECT] Expanding state 21...
+
+>>> Generated State 23
+    Parent: 21 | Action: move_up
+    Position: (2,1) | Cost: 7
+
+>>> Generated State 24
+    Parent: 21 | Action: move_left
+    Position: (1,2) | Cost: 7
+
+>>> Generated State 25
+    Parent: 21 | Action: move_down
+    Position: (2,3) | Cost: 7
+
+[WAREHOUSE] Robot reached warehouse in state 25
+[A* SELECT] Expanding state 25...
+[MAX_LOAD] State 25: max load = 1
+[STRATEGY] State 25 chooses type: start with tulip(yellow)
+[LOAD] Started loading: 1x tulip (yellow) in state 25
+
+>>> Generated State 26
+    Parent: 25 | Action: move_up
+    Position: (2,2) | Cost: 8
+
+>>> Generated State 27
+    Parent: 25 | Action: move_left
+    Position: (1,3) | Cost: 8
+
+>>> Generated State 28
+    Parent: 25 | Action: move_down
+    Position: (2,4) | Cost: 8
+
+>>> Generated State 29
+    Parent: 25 | Action: move_right
+    Position: (3,3) | Cost: 8
+[A* SELECT] Expanding state 28...
+
+>>> Generated State 30
+    Parent: 28 | Action: move_up
+    Position: (2,3) | Cost: 9
+
+[WAREHOUSE] Robot reached warehouse in state 30
+
+>>> Generated State 31
+    Parent: 28 | Action: move_left
+    Position: (1,4) | Cost: 9
+
+>>> Generated State 32
+    Parent: 28 | Action: move_down
+    Position: (2,5) | Cost: 9
+
+>>> Generated State 33
+    Parent: 28 | Action: move_right
+    Position: (3,4) | Cost: 9
+[A* SELECT] Expanding state 33...
+[PAVILION] Robot arrived at pavilion p2 in state 33
+[UNLOAD] Delivered 1x tulip (yellow) to p2 in state 33
+
+>>> Generated State 34
+    Parent: 33 | Action: move_up
+    Position: (3,3) | Cost: 10
+
+>>> Generated State 35
+    Parent: 33 | Action: move_left
+    Position: (2,4) | Cost: 10
+
+>>> Generated State 36
+    Parent: 33 | Action: move_down
+    Position: (3,5) | Cost: 10
+
+>>> Generated State 37
+    Parent: 33 | Action: move_right
+    Position: (4,4) | Cost: 10
+[A* SELECT] Expanding state 34...
+
+>>> Generated State 38
+    Parent: 34 | Action: move_up
+    Position: (3,2) | Cost: 11
+
+>>> Generated State 39
+    Parent: 34 | Action: move_left
+    Position: (2,3) | Cost: 11
+
+[WAREHOUSE] Robot reached warehouse in state 39
+
+>>> Generated State 40
+    Parent: 34 | Action: move_right
+    Position: (4,3) | Cost: 11
+[A* SELECT] Expanding state 39...
+[MAX_LOAD] State 39: max load = 1
+[STRATEGY] State 39 chooses type: start with orchid(purple)
+[LOAD] Started loading: 1x orchid (purple) in state 39
+
+>>> Generated State 41
+    Parent: 39 | Action: move_up
+    Position: (2,2) | Cost: 12
+
+>>> Generated State 42
+    Parent: 39 | Action: move_left
+    Position: (1,3) | Cost: 12
+
+>>> Generated State 43
+    Parent: 39 | Action: move_down
+    Position: (2,4) | Cost: 12
+
+>>> Generated State 44
+    Parent: 39 | Action: move_right
+    Position: (3,3) | Cost: 12
+[A* SELECT] Expanding state 43...
+
+>>> Generated State 45
+    Parent: 43 | Action: move_up
+    Position: (2,3) | Cost: 13
+
+[WAREHOUSE] Robot reached warehouse in state 45
+
+>>> Generated State 46
+    Parent: 43 | Action: move_left
+    Position: (1,4) | Cost: 13
+
+>>> Generated State 47
+    Parent: 43 | Action: move_down
+    Position: (2,5) | Cost: 13
+
+>>> Generated State 48
+    Parent: 43 | Action: move_right
+    Position: (3,4) | Cost: 13
+[A* SELECT] Expanding state 48...
+[PAVILION] Robot arrived at pavilion p2 in state 48
+
+>>> Generated State 49
+    Parent: 48 | Action: move_up
+    Position: (3,3) | Cost: 14
+
+>>> Generated State 50
+    Parent: 48 | Action: move_down
+    Position: (3,5) | Cost: 14
+
+>>> Generated State 51
+    Parent: 48 | Action: move_right
+    Position: (4,4) | Cost: 14
+[A* SELECT] Expanding state 51...
+
+>>> Generated State 52
+    Parent: 51 | Action: move_up
+    Position: (4,3) | Cost: 15
+
+>>> Generated State 53
+    Parent: 51 | Action: move_down
+    Position: (4,5) | Cost: 15
+
+>>> Generated State 54
+    Parent: 51 | Action: move_right
+    Position: (5,4) | Cost: 15
+[A* SELECT] Expanding state 54...
+[PAVILION] Robot arrived at pavilion p3 in state 54
+[UNLOAD] Delivered 1x orchid (purple) to p3 in state 54
+
+>>> Generated State 55
+    Parent: 54 | Action: move_up
+    Position: (5,3) | Cost: 16
+
+>>> Generated State 56
+    Parent: 54 | Action: move_left
+    Position: (4,4) | Cost: 16
+
+>>> Generated State 57
+    Parent: 54 | Action: move_down
+    Position: (5,5) | Cost: 16
+[A* SELECT] Expanding state 55...
+
+>>> Generated State 58
+    Parent: 55 | Action: move_up
+    Position: (5,2) | Cost: 17
+
+>>> Generated State 59
+    Parent: 55 | Action: move_left
+    Position: (4,3) | Cost: 17
+[A* SELECT] Expanding state 59...
+
+>>> Generated State 60
+    Parent: 59 | Action: move_up
+    Position: (4,2) | Cost: 18
+
+>>> Generated State 61
+    Parent: 59 | Action: move_left
+    Position: (3,3) | Cost: 18
+
+>>> Generated State 62
+    Parent: 59 | Action: move_down
+    Position: (4,4) | Cost: 18
+[A* SELECT] Expanding state 61...
+
+>>> Generated State 63
+    Parent: 61 | Action: move_up
+    Position: (3,2) | Cost: 19
+
+>>> Generated State 64
+    Parent: 61 | Action: move_left
+    Position: (2,3) | Cost: 19
+
+[WAREHOUSE] Robot reached warehouse in state 64
+
+>>> Generated State 65
+    Parent: 61 | Action: move_down
+    Position: (3,4) | Cost: 19
+[A* SELECT] Expanding state 64...
+[MAX_LOAD] State 64: max load = 1
+[STRATEGY] State 64 chooses type: start with juliet_rose(red)
+[LOAD] Started loading: 1x juliet_rose (red) in state 64
+
+>>> Generated State 66
+    Parent: 64 | Action: move_up
+    Position: (2,2) | Cost: 20
+
+>>> Generated State 67
+    Parent: 64 | Action: move_left
+    Position: (1,3) | Cost: 20
+
+>>> Generated State 68
+    Parent: 64 | Action: move_down
+    Position: (2,4) | Cost: 20
+
+>>> Generated State 69
+    Parent: 64 | Action: move_right
+    Position: (3,3) | Cost: 20
+[A* SELECT] Expanding state 68...
+
+>>> Generated State 70
+    Parent: 68 | Action: move_up
+    Position: (2,3) | Cost: 21
+
+[WAREHOUSE] Robot reached warehouse in state 70
+
+>>> Generated State 71
+    Parent: 68 | Action: move_left
+    Position: (1,4) | Cost: 21
+
+>>> Generated State 72
+    Parent: 68 | Action: move_down
+    Position: (2,5) | Cost: 21
+
+>>> Generated State 73
+    Parent: 68 | Action: move_right
+    Position: (3,4) | Cost: 21
+[A* SELECT] Expanding state 72...
+[PAVILION] Robot arrived at pavilion p4 in state 72
+[UNLOAD] Delivered 1x juliet_rose (red) to p4 in state 72
+
+====================================
+=== GOAL REACHED IN STATE 72 ===
+====================================
+
+>>> TRACING PATH <<<
+PATH[72]: move_down -> (2,5) cost=21
+PATH[68]: move_down -> (2,4) cost=20
+PATH[64]: move_left -> (2,3) cost=19
+PATH[61]: move_left -> (3,3) cost=18
+PATH[59]: move_left -> (4,3) cost=17
+PATH[55]: move_up -> (5,3) cost=16
+PATH[54]: move_right -> (5,4) cost=15
+PATH[51]: move_right -> (4,4) cost=14
+PATH[48]: move_right -> (3,4) cost=13
+PATH[43]: move_down -> (2,4) cost=12
+PATH[39]: move_left -> (2,3) cost=11
+PATH[34]: move_up -> (3,3) cost=10
+PATH[33]: move_right -> (3,4) cost=9
+PATH[28]: move_down -> (2,4) cost=8
+PATH[25]: move_down -> (2,3) cost=7
+PATH[21]: move_left -> (2,2) cost=6
+PATH[17]: move_left -> (3,2) cost=5
+PATH[15]: move_right -> (4,2) cost=4
+PATH[12]: move_right -> (3,2) cost=3
+PATH[5]: move_up -> (2,2) cost=2
+PATH[4]: move_right -> (2,3) cost=1
+PATH[1]: start -> (1,3) cost=0
+>>> PATH TRACE COMPLETE
+
+=== Search Completed ===
+Total Generated States : 72
+Total Visited/Expanded States : 21

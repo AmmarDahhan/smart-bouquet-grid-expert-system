@@ -5,8 +5,8 @@ def load_initial_facts(engine):
     # Grid configuration
     engine.declare(
         Grid(
-            width=6,
-            height=6
+            width=5,
+            height=5
         )
     )
 
@@ -18,30 +18,22 @@ def load_initial_facts(engine):
         )
     )
 
-    # Initial State - Robot at (3,1) with no cost
+    # Initial State - Robot at (1,3) with no cost
     engine.declare(
         State(
             id=1,
             parent=0,
             action='start',
-            robot_x=3,
-            robot_y=1,
+            robot_x=1,
+            robot_y=3,
             cost=0,
-            path=((3, 1),)
+            path=((1, 3),)
         )
     )
 
     # Initialize state counter for generating unique state IDs
     engine.declare(
         StateCounter(value=1)
-    )
-
-    # Mark initial state position as visited
-    engine.declare(
-        StateSignature(
-            robot_x=3,
-            robot_y=1
-        )
     )
 
     # Activate the initial state for search
